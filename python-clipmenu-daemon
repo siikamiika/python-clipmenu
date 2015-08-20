@@ -30,7 +30,7 @@ while True:
 
     for i, sel in enumerate(clipboards):
 
-        data = check_output(['xsel', '--'+sel]).decode()
+        data = check_output(['xsel', '--'+sel]).decode('utf-8', 'ignore')
         if not data or data == last_data:
             continue
         last_data = data
