@@ -23,13 +23,14 @@ selections = OrderedDict()
 for i, fn in enumerate(sorted(os.listdir(tmpdir), reverse=True)):
     fn = os.path.join(tmpdir, fn)
     f = open(fn)
+    line = f.readline()
     selections['{}: {}'.format(
         i,
-        f.readline().rstrip() + ('...' if f.readline() else '')
+        line[:20] + ('...' if f.readline() or len(line) > 20 else '')
         )] = fn
     f.close()
 
-select_entry = Popen(['dmenu', '-i', '-l', '8'],
+select_entry = Popen(['dmenu', '-i', '-fn', '*'],
     stdin=PIPE, stdout=PIPE)
 select_entry.stdin.write('\n'.join(selections.keys()).encode())
 select_entry.stdin.close()
