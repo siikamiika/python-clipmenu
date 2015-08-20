@@ -41,7 +41,8 @@ if not selected:
 filename = selections[selected]
 with open(filename) as f:
     text = f.read().encode()
-os.remove(filename)
+if list(selections.keys()).index(selected):
+    os.remove(filename)
 
 for sel in 'clipboard', 'primary':
     update_clipboard = Popen(['xsel', '-i', '--'+sel],
