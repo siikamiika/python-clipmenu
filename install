@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cp python-clipmenu-client /usr/local/bin
+cp python-clipmenu-daemon /usr/local/bin

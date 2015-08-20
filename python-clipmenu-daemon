@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+# depends on xsel and dmenu
+
+# Author(s): siikamiika
+#
+# Inspired by https://github.com/cdown/clipmenu
+# Added features:
+# - sync clipboard and primary
+# - higher polling rate
+# - remove copied history entries because they get re-created anyway
+
+import os
+from subprocess import Popen, check_output, PIPE
+import time
+import hashlib
+
+clipboards = ['clipboard', 'primary']
+tmpdir = os.path.join('/tmp',
+    'python-clipmenu.{}'.format(os.environ['USER']))
+
+try:
+    os.makedirs(tmpdir, 0o700)
+except FileExistsError:
+    pass
+
+last_data = None
+
+while True:
+
+    for i, sel in enumerate(clipboards):
+
+        data = check_output(['xsel', '--'+sel]).decode()
+        if not data or data == last_data:
+            continue
+        last_data = data
+
+        sync_clipboards = Popen(['xsel', '-i', '--'+clipboards[not i]],
+            stdin=PIPE, stdout=PIPE)
+        sync_clipboards.stdin.write(data.encode())
+        sync_clipboards.stdin.close()
+        sync_clipboards.wait()
+
+        md5 = hashlib.md5()
+        md5.update(data.encode())
+        digest = md5.hexdigest()
+        timestring = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
+        filename = os.path.join(tmpdir, timestring+'-'+digest)
+
+        with open(filename, 'w') as f:
+            f.write(data)
+
+    time.sleep(0.5)
