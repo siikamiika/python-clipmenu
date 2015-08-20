@@ -26,7 +26,7 @@ for i, fn in enumerate(sorted(os.listdir(tmpdir), reverse=True)):
     line = f.readline()
     selections['{}: {}'.format(
         i,
-        line[:20] + ('...' if f.readline() or len(line) > 20 else '')
+        line.rstrip()[:20] + ('...' if f.readline() or len(line) > 20 else '')
         )] = fn
     f.close()
 
